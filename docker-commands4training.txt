@@ -1,0 +1,249 @@
+sarvika tamilselvi
+
+install nginx
+install jenkins 
+install tomcat
+install tomcat:latest
+remove and again 
+
+
+Docker Installation on Ubuntu machine :
+--------------------------------------------
+    sudo apt-get update 
+    sudo apt-get install docker.io
+
+
+Install docker on amazon linux :
+-------------------------------
+yum install docker –y 
+
+Common commands:
+-------------------------
+  docker pull ubuntu 
+  docker images / docker image ls
+  docker run –it –d ubuntu -- > attached to a container it should be in running mode .
+  docker ps –a  /docker ps
+  docker run -d --name test-tomcat-server -p 8090:8080 tomcat:latest
+  docker exec –it <container_id> bash 
+  docker kill <container_id>
+  docker rm <container id>  -- > will remove the container but it should be stopped
+  docker rm  -f <container_id> -- > delete container forcefully 
+  docker rmi <image id> -- > to remove the image  
+  docker rm –f $(docker ps –a –q )
+  docker commit 
+  docker start <container id >
+  docker stop <contain ner id >
+  come out of atatched mode -- > ctrl +p .ctrl +q 
+  
+  docker run ubuntu cat /etc/*release*  -> To find which version of ubuntu version was pulled from the dockerhub
+  
+  ommands:
+------------ 
+ yum install docker –y 
+ systemctl start docker
+ docker version
+ docker run hello-world
+ docker ps –a
+ docker ps
+ docker images
+ docker run –it <container id> -- > exit to come out or ctrl +p +ctrl +q
+ docker run –itd <container id> -- > run in detached manner
+ docker attach <container id> -- if you want to go inside the container
+ docker start <container id>
+ docker stop <container-id>
+ docker rm <container-id>  -- cannot remove a running container or use –f option .
+ docker rmi <image-id>
+ 
+
+root@df33de3dcefb:/usr/local/tomcat/webapps.dist# cp -R * ../webapps
+docker exec -it tomcat-Nagaraj /bin/bash
+  
+Create a volume to preserve the data present in container :
+----------------------------------------------------------
+  docker volume ls -- > list
+  docker volume create vol1 -- > create a volume
+  docker volume inspect vol1 -- > see the location
+  docker run -it --name <any name> -v vol1:/data <container name>
+  docker volume rm vol1
+
+Bind Mount :
+-----------
+  docker run -it --name <any name> -v <bind mount location eg: /tmp/logs>:/data:Z Ubuntu   -- > this Z flag will enable read write in container .
+  docker run -it --name <any name> --volumes-from <existing container name > Ubuntu      
+
+
+
+dockerfile :
+------------
+From ubuntu 
+Maintainer “Nagaraj”
+RUN apt-get update 
+RUN apt-get install vim –y 
+CMD /bin/echo “ I am from ubuntu container “
+
+To run this, say == > docker build –t myimage .
+
+
+
+
+
+ # echo “This is created for devops Course” > index.html
+ 
+Dockerfile :
+FROM centos:latest 
+RUN yum install 
+
+==========================================
+Steps to create a Docker file : in Docker machine home@dockeradmin
+---------------------------------
+ vi Dockerfile 
+
+# Pull tomcat latest image from dockerhub 
+From tomcat:latest
+
+# Maintainer
+MAINTAINER “Nagaraj" 
+
+# copy war file on to container 
+COPY ./webapp.war /usr/local/tomcat/webapps
+
+
+  docker build –t devops-project .  
+  docker images 
+  docker run -- name devops-container –p 8080:8080 devops-project 
+
+
+
+
+A Dockerfile is a text document that contains all the commands a user could call on the command line to assemble an image and build images automatically by reading the instructions from a Dockerfile.  A Docker image consists of read-only layers each of which represents a Dockerfile instruction. 
+
+FROM: The FROM instruction initializes a new build stage and sets the Base Image for subsequent instructions. Base Image can be any valid image.
+LABEL : LABEL added to image to organize images by project, record licensing information. Eg: LABEL com.example.version=“0.0.1-beta“
+RUN : RUN instruction will execute any commands in a new layer on top of the current image and commit the results. 
+CMD : CMD instruction should be used to run the software contained by your image, along with any arguments. There can only be one CMD instruction in a Dockerfile. If you list more than one CMD then only the last CMD will take effect. The main purpose of a CMD is to provide defaults for an executing container.
+EXPOSE : EXPOSE instruction indicates the ports on which a container listens for connections.
+ENV : ENV instruction sets the environment variable
+ADD : ADD instruction copies new files, directories or remote file URLs from and adds them to the filesystem of the image at the path .
+VOLUME : VOLUME instruction should be used to expose any database storage area, configuration storage, or files/ folders created by your docker container. 
+WORKDIR : WORKDIR instruction sets the working directory for any RUN, CMD, ADD instructions that follow it in the Dockerfile.
+
+
+
+
+
+
+
+
+
+
+
+
+C
+
+
+
+
+Docker File :
+-------------
+FROM node:14
+WORKDIR /app
+COPY package.json .
+RUN npm install
+COPY . .
+EXPOSE 3000
+CMD [ "node", "app.mjs" ]
+
+Docker build .
+Docker run –p 3000:3000 <container id >
+
+
+
+
+
+Docker Volume : Data preservation methodology 
+================================
+ docker volume ls
+ docker volume create volume vol1
+ docker volume inspect <volume name> -- > by default storage is /var/lib/docker 
+ docker run -it --name <any name> -v <volume on container>:<directory on host> <container id> == > docker run –it --name container1 –v vol1:/data ubuntu 
+ this volume can be attached to multiple containers.
+ docker volume rm vol1
+
+Bind Mount : Another way to share container data with host machine with location choice  
+===========================================================
+ cd tmp/logs -- > create a file.txt -- > 
+ docker run –it –name <container name> -v /tmp/logs:/data:Z <image name>
+ /tmp/logs in host machine is mapped to /data on container . 
+
+Create a dockerfile :
+=============
+FROM ubuntu
+Maintainer “Nagaraj”
+RUN apt-get update
+RUN apt-get install vim –y
+CMD /bin/echo “Hello from Docker” 
+
+ docker build –t <image name required> .
+ docker images to check the image created
+
+
+Docker Network:
+============
+ docker network ls -- > see the default networks 
+ 1. bridge 2. host 3. null
+ docker network inspect bridge  -- > check the containers section 
+ 
+Different containers under same network can talk with each other via ip address
+ apt-get update  && apt-get install –y iputils-ping 
+ take one of the the container ip from inspect command and use it on the other one to see connectivity .
+ 
+ 
+ 
+ Docker Network :
+
+https://www.docker.com/blog/understanding-docker-networking-drivers-use-cases/
+https://docs.docker.com/network/
+
+docker network ls
+docker network --help
+docker network ls -f driver=bridge
+docker network ls --format "{{.ID}}: {{.Driver}}"
+docker network inspect "networkid"
+docker network create "networkname"
+docker network create -d bridge "networkname“
+docker network rm “networkname”
+docker network connect "networkname" "containername"
+docker container run -d --name "nameofcontainer" --network "networkname" image
+docker network disconnect "networkname" "containername“
+Docker exec –it nginx1 bash
+ apt-get update
+ apt-get install iputils-ping
+docker exec -it “nginx2" ping “nginx3"
+
+
+ 
+Create a custom bridge :
+===============
+ docker network create --driver bridge <bridge name>
+ docker run -itd  --name <container name> --network <network created > <image from hub>
+
+Port Publishing or forwarding on Docker:
+===========================
+ docker run -itd --name <container name> nginx
+ docker inspect <container name> -- > to get the IPAddress
+ curl ip:80 -- > get the o/p
+ docker run -itd --name <container name> -P nginx
+ docker run -itd --name <container name> -p 9999:80 nginx
+
+
+
+
+wget https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m) 
+sudo mv docker-compose-$(uname -s)-$(uname -m) /usr/local/bin/docker-compose
+sudo chmod -v +x /usr/local/bin/docker-compose
+
+
+Extend Docker Official Nginx Image. 
+
+https://kubernetes.io/docs/tutorials/kubernetes-basics/create-cluster/cluster-interactive/
+ 

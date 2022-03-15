@@ -1,10 +1,5 @@
-sarvika tamilselvi
 
-install nginx
-install jenkins 
-install tomcat
-install tomcat:latest
-remove and again 
+
 
 
 Docker Installation on Ubuntu machine :
@@ -66,6 +61,7 @@ Create a volume to preserve the data present in container :
   docker run -it --name <any name> -v vol1:/data <container name>
   docker volume rm vol1
 
+  docker run -it --name jenkins --mount source=vol1,destination=/var/jenkins_home jenkins/jenkins:lts-jdk11
 Bind Mount :
 -----------
   docker run -it --name <any name> -v <bind mount location eg: /tmp/logs>:/data:Z Ubuntu   -- > this Z flag will enable read write in container .
@@ -138,7 +134,7 @@ WORKDIR : WORKDIR instruction sets the working directory for any RUN, CMD, ADD i
 
 
 
-C
+
 
 
 
